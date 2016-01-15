@@ -65,6 +65,10 @@ public class StatsFutureSet extends AbstractFutureManager{
         }
 	return true;
     }
+    
+    public void printStats(){
+    	futureAction.printStats();
+    }
 
     public long getNumInserted() {
     return numInserted.get();

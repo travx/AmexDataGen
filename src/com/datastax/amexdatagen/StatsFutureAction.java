@@ -19,9 +19,17 @@ public class StatsFutureAction {
     	
 	    long cur = numInserted.incrementAndGet();
 	    if (0 == (cur % period)) {
-	    	System.out.println("Progress:  " + cur);
-	    	statistics.print();
+	    	printStats(cur);
 	    }
+    }
+    
+    public void printStats(){
+    	printStats(numInserted.get());
+    }
+    
+    public void printStats(long cur){
+    	System.out.println("Total Operations Performed:  " + cur);
+    	statistics.print();
     }
     
     public void onFailure(Throwable t, String line){

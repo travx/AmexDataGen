@@ -43,6 +43,10 @@ public class DataStaxCluster {
 		prepare();
 	}
 	
+	public void printStats(){
+		futures.printStats();
+	}
+	
 	private void connect(){
 		Builder builder = Cluster.builder();
 		builder.addContactPoints(nodes);

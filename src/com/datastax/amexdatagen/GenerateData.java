@@ -4,15 +4,16 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class GenerateData {
+	
+	//Arguments - for executing multiple times without overwriting records
+	private static int NUMRECORDS = 1000000;
+	private static int OFFSET = 1000000;
+	private static double READ_PCT = 0;   //Percentage of reads. A value of .7 means 70% reads. Defaults to insert-only. 1 means read-only.
+	private static int MINUTES = 0;
 
 	public static void main(String[] args) throws InterruptedException {
 		// Cluster Connection
 		DataStaxCluster dse = new DataStaxCluster(new String[]{"node0", "node1", "node2"}, "amexpoc");
-		
-		//Arguments - for executing multiple times without overwriting records
-		int NUMRECORDS = 1000000;
-		int OFFSET = 1000000;
-		int READ_RATIO = 0;  //0-10 A value of 7 means 70% reads. Defaults to insert-only. 10 means read-only.
 		
 		if (args.length > 0){
 			NUMRECORDS = Integer.parseInt(args[0]);
@@ -23,8 +24,12 @@ public class GenerateData {
 		}
 		
 		if (args.length > 2){
-			READ_RATIO = Integer.parseInt(args[2]);
-		}		
+			READ_PCT = Double.parseDouble(args[2]);
+		}
+		
+		if (args.length > 3){
+			MINUTES = Integer.parseInt(args[3]);
+		}
 
 		//List of possible zipcodes
 		ArrayList<Zip> zips = dse.getZips();
@@ -38,14 +43,16 @@ public class GenerateData {
 		//Random generator (for getting a random zip code)
 		Random r = new Random();
 		
+		long endTime = System.currentTimeMillis() + (MINUTES * 60000);
+		
 		//Merchant ID
 		int merchantID = OFFSET;
 		
-		for (int i=0; i<NUMRECORDS; i++){
+		for (int i=0; i<NUMRECORDS || System.currentTimeMillis() < endTime; i++){
 			//get random city, state, zip, lat_lon
 			Zip z = zips.get(r.nextInt(zips.size()));
 			
-			if (r.nextInt(10) < READ_RATIO){
+			if (r.nextFloat() < READ_PCT){
 				if (r.nextBoolean()){
 					//Read data by merchant ID
 					dse.getMerchant(r.nextInt(merchantID));
@@ -95,6 +102,7 @@ public class GenerateData {
 		//finish
 		System.out.println("Test complete.");
 		System.out.println("Next Merchant ID: " + merchantID); //output the last merchantID for offset of next run
+		dse.printStats();
 		System.exit(0);
 		
 	}

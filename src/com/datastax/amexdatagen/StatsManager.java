@@ -10,7 +10,7 @@ public class StatsManager {
 	}
 	
 	public void print(){
-		System.out.println("statsName" + "\t" + "operationCount" + "\t" + "totalDuration" + "\t" + "minDuration" + "\t" + "maxDuration" + "\t" + "avgDuration");
+		System.out.printf("%30s  %30s  %30s  %30s  %30s  %30s %n", "statsName", "operationCount", "totalDuration", "minDuration", "maxDuration", "avgDuration");
 		for (ExecutionStats e : statsEntries.values()){
 			e.print();
 		}
